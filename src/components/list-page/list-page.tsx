@@ -7,6 +7,7 @@ import styles from './list-page.module.css'
 import { List } from "../../class/list";
 import { ElementStates } from "../../types/element-states";
 import { log } from "console";
+import { useStateButtons } from "../../fooks/useStateButtons";
 
 type TNode = {
   value: string,
@@ -14,6 +15,7 @@ type TNode = {
   isHead: boolean,
   isTail: boolean
 }
+type TStateButtons = Record<string, boolean>
 
 export const ListPage: React.FC = () => {
   // тут нужны хуки, но ...
@@ -28,18 +30,23 @@ export const ListPage: React.FC = () => {
   const [element, setElement] = useState<string>();
   const [toggle, setToggle] = useState<boolean>(false)
   const [indexElement, setIndexElement] = useState<number>(0)
-  const [isDisabled, setIsDisabled] = useState<boolean>(false)
-  const [isAddHeadButtonDisabled, setIsAddHeadButtonDisabled] = useState(false);
-  const [isAddTailButtonDisabled, setIsAddTailButtonDisabled] = useState(false);
-  const [isDelHeadButtonDisabled, setIsDelHeadButtonDisabled] = useState(false);
-  const [isDelTailButtonDisabled, setIsDelTailButtonDisabled] = useState(false);
-  const [isLoaderAddHead, setIsLoaderAddHead] = useState(false)
-  const [isLoaderAddTail, setIsLoaderAddTail] = useState(false)
-  const [isLoaderDelHead, setIsLoaderDelHead] = useState(false)
-  const [isLoaderDelTail, setIsLoaderDelTail] = useState(false)
-  const [isLoaderAddId, setIsLoaderAddId] = useState(false)
-  const [isLoaderDelId, setIsLoaderDelId] = useState(false)
+  
+  const stateButtons = {
+    isDisabledAddHead: false,
+    isDisabledAddTail: false,
+    isDisabledDelHead: false,
+    isDisabledDelTail: false,
+    isDisabledAddId: false,
+    isDisabledDelId: false,
+    isLoaderAddHead: false,
+    isLoaderAddTail: false,
+    isLoaderDelHead: false,
+    isLoaderDelTail: false,
+    isLoaderAddId: false,
+    isLoaderDelId: false,
+  }
 
+  const { elements, handleClick, handleInput } = useStateButtons<TStateButtons>(stateButtons)
 
   const listRef = useRef(new List<string>())
   const [arrNode, setArrNode] = useState<TNode[]>([...listRef.current.createArr()])
@@ -47,26 +54,16 @@ export const ListPage: React.FC = () => {
 
 
   const onChange = (e: React.FormEvent<HTMLInputElement>) => {
-    (e.currentTarget.name === 'value') ?
-      setInputValue(e.currentTarget.value) :
-      setInputIndex(e.currentTarget.value)
-    if (e.currentTarget.name === 'index') {
-      setIsAddHeadButtonDisabled(true)
-      setIsAddTailButtonDisabled(true)
-      setIsDelHeadButtonDisabled(true)
-      setIsDelTailButtonDisabled(true)
-    }
-    if (e.currentTarget.name === 'value') {
-      setIsAddHeadButtonDisabled(false)
-      setIsAddTailButtonDisabled(false)
-      setIsDelHeadButtonDisabled(false)
-      setIsDelTailButtonDisabled(false)
-    }
+    (e.currentTarget.name === 'value')
+      ? setInputValue(e.currentTarget.value)
+      : setInputIndex(e.currentTarget.value);
 
+    ( e.currentTarget.name === 'index' && inputValue === '') ? handleInput(false) : handleInput(true);
   }
 
   const handleClickButtonAddTail = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, element: string) => {
-    setIsLoaderAddTail(true)
+    const { name } = e.currentTarget;
+    handleClick(name)
     setIsAdd(true)
     setTypeAdd('tail');
     setElement(`${element}`)
@@ -77,11 +74,12 @@ export const ListPage: React.FC = () => {
     setIsAdd(false)
     setElement('')
     setArrNode([...listRef.current.createArr()])
-    setIsLoaderAddTail(false)
+    handleClick(name)
   }
 
-  const handleClickButtonDelTail = async () => {
-    setIsLoaderAddTail(true)
+  const handleClickButtonDelTail = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    const { name } = e.currentTarget;
+    handleClick(name)
     setIsDel(true);
     setIsDelTail(true);
     setElement(`${listRef.current.getTail()}`);
@@ -90,11 +88,12 @@ export const ListPage: React.FC = () => {
     setIsDel(false);
     setIsDelTail(false);
     setArrNode([...listRef.current.createArr()]);
-    setIsLoaderAddTail(false)
+    handleClick(name)
   }
 
-  const handleClickButtonAddHead = async (element: string) => {
-    setIsLoaderAddHead(true)
+  const handleClickButtonAddHead = async (e: React.MouseEvent<HTMLButtonElement>, element: string) => {
+    const { name } = e.currentTarget;
+    handleClick(name)
     setTypeAdd('head');
     setIsAdd(true)
     setElement(`${element}`);
@@ -104,11 +103,13 @@ export const ListPage: React.FC = () => {
     setArrNode([...listRef.current.createArr()]);
     setTypeAdd('');
     setIsAdd(false);
-    setIsLoaderAddHead(false)
+    handleClick(name);
   }
 
-  const handleClickButtonDelHead = async () => {
-    setIsLoaderDelHead(true)
+
+  const handleClickButtonDelHead = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    const { name } = e.currentTarget;
+    handleClick(name)
     setTypeDel('head');
     setIsDel(true);
     setIsDelHead(true);
@@ -120,12 +121,13 @@ export const ListPage: React.FC = () => {
     setIsDel(false);
     setIsDelHead(false);
     setElement('')
-    setIsLoaderDelHead(false)
+    handleClick(name)
   }
 
-  const handleClickButtonAddId = async (element: string, id: string) => {
+  const handleClickButtonAddId = async (element: string, id: string, e: React.MouseEvent<HTMLButtonElement>) => {
     if (+id < arrNode.length) {
-      setIsLoaderAddId(true)
+      const { name } = e.currentTarget;
+      handleClick(name);
       setElement(element)
       setInputValue('')
       setInputIndex('')
@@ -140,13 +142,14 @@ export const ListPage: React.FC = () => {
       setArrNode([...listRef.current.createArr()]);
       setElement('');
       setTypeAdd('');
-      setIsLoaderAddId(false)
+      handleClick(name);
     }
   }
 
-  const handleClickButtonDelId = async (id: string) => {
-    if (+id < arrNode.length) {
-      setIsLoaderDelId(true)
+  const handleClickButtonDelId = async (id: string, e: React.MouseEvent<HTMLButtonElement>) => {
+    if (+id < arrNode.length) {      
+      const { name } = e.currentTarget;
+      handleClick(name);
       setInputIndex('');
       setTypeDel('id');
       let elem;
@@ -170,12 +173,12 @@ export const ListPage: React.FC = () => {
       setTypeDel('');
       setToggle(false);
       setElement('');
-      setIsLoaderDelId(false)
+      handleClick(name);
     }
   }
 
 
-  useEffect(() => { }, [isAdd, element, arrNode, toggle])
+  useEffect(() => { }, [isAdd, element, arrNode, toggle, elements, inputIndex, inputValue])
 
 
 
@@ -184,44 +187,77 @@ export const ListPage: React.FC = () => {
     <SolutionLayout title="Связный список">
       <div className={`${styles.container}`} >
         <form className={`${styles.formValue}`}       >
-          <Input type="number" maxLength={4} id='input' placeholder="Введите значение" onChange={(e) => onChange(e)} name="value" value={inputValue} />
+          <Input
+            type="number"
+            maxLength={4}
+            id='input'
+            placeholder="Введите значение"
+            onChange={onChange}
+            name="value"
+            value={inputValue}
+          />
 
           <div className={`${styles.buttonsBlock}`}>
             <Button
+              name='AddHead'
               text="Добавить в head"
               extraClass={`${styles.buttonSize}`}
-              onClick={(e) => handleClickButtonAddHead(inputValue)}
-              name="head"
-              disabled={isAddHeadButtonDisabled}
-              isLoader={isLoaderAddHead}
+              onClick={(e) => handleClickButtonAddHead(e, inputValue)}
+              disabled={elements.isDisabledAddHead}
+              isLoader={elements.isLoaderAddHead}
             />
             <Button
+              name="AddTail"
               text="Добавить в tail"
               extraClass={`${styles.buttonSize}`}
               onClick={(e) => handleClickButtonAddTail(e, inputValue)}
-              disabled={isAddTailButtonDisabled}
-              isLoader={isLoaderAddTail} />
+              disabled={elements.isDisabledAddTail}
+              isLoader={elements.isLoaderAddTail} />
             <Button
+              name="DelHead"
               text="Удалить из head"
               extraClass={`${styles.buttonSize}`}
-              onClick={() => handleClickButtonDelHead()}
-              disabled={isDelHeadButtonDisabled}
-              isLoader={isLoaderDelHead} />
+              onClick={(e) => handleClickButtonDelHead(e)}
+              disabled={elements.isDisabledDelHead}
+              isLoader={elements.isLoaderDelHead} />
             <Button
+              name="DelTail"
               text="Удалить из tail"
               extraClass={`${styles.buttonSize}`}
-              onClick={() => handleClickButtonDelTail()}
-              disabled={isDelTailButtonDisabled}
-              isLoader={isLoaderAddTail} />
+              onClick={(e) => handleClickButtonDelTail(e)}
+              disabled={elements.isDisabledDelTail}
+              isLoader={elements.isLoaderDelTail} />
           </div>
 
         </form>
         <form className={`${styles.formIndex}`}>
-          <Input type="number" maxLength={4} id='input' placeholder="Введите индекс" onChange={(e) => onChange(e)} name="index" value={inputIndex} />
+          <Input
+            type="number"
+            maxLength={4}
+            id='input'
+            placeholder="Введите индекс"
+            onChange={onChange}
+            name="index"
+            value={inputIndex} />
 
           <div className={`${styles.buttonsBlock}`}>
-            <Button text="Добавить по индексу" linkedList="big" onClick={() => handleClickButtonAddId(inputValue, inputIndex)} />
-            <Button text="Удалить по индексу" linkedList="big" onClick={() => handleClickButtonDelId(inputIndex)} />
+            <Button
+              name="AddId"
+              text="Добавить по индексу"
+              linkedList="big"
+              onClick={(e) => handleClickButtonAddId(inputValue, inputIndex, e)}
+              disabled={elements.isDisabledAddId}
+              isLoader={elements.isLoaderAddId}
+            />
+
+            <Button
+              name="DelId"
+              text="Удалить по индексу"
+              linkedList="big"
+              onClick={(e) => handleClickButtonDelId(inputIndex, e)}
+              disabled={elements.isDisabledDelId}
+              isLoader={elements.isLoaderDelId}
+            />
           </div>
         </form>
 
