@@ -15,7 +15,7 @@ type TNode = {
   isHead: boolean,
   isTail: boolean
 }
-type TStateButtons = Record<string, boolean>
+export type TStateButtons = Record<string, boolean>
 
 export const ListPage: React.FC = () => {
   // тут нужны хуки, но ...

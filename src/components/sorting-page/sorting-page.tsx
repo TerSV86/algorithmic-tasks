@@ -6,16 +6,31 @@ import { Direction } from "../../types/direction";
 import { Column } from "../ui/column/column";
 import { ElementStates } from "../../types/element-states";
 import styles from './sorting-page.module.css'
+import { useStateButtons } from "../../fooks/useStateButtons";
+import { TStateButtons } from "../list-page/list-page";
+
+
 
 export const SortingPage: React.FC = () => {
   const [arr, setArr] = useState<{ value: number, color: ElementStates }[]>(createArray());
   const [metod, setMetod] = useState<string>('selection');
-  const [isSorting, setIsSorting] = useState<boolean>(false)
+  const [isSorting, setIsSorting] = useState<boolean>(false);
 
-  const handleClickButtonNewArray = () => {    
+  const stateButtons = {
+    isDisabledButtonAscending: false,
+    isDisabledButtonDescending: false,
+    isDisabledNewArr: false,
+    isDisabledsort: false,
+    isLoaderButtonAscending: false,
+    isLoadergButtonDescending: false,
+  }
+
+  const {elements, handleClick} = useStateButtons<TStateButtons>(stateButtons)
+
+  const handleClickButtonNewArray = () => {
     setArr(createArray());
-  } 
-  function createArray () {
+  }
+  function createArray() {
     const lengthArray = Math.floor(Math.random() * (17 - 3)) + 3;
     let arr: number[] = [];
     for (let i = 0; i <= lengthArray; i++) {
@@ -27,8 +42,8 @@ export const SortingPage: React.FC = () => {
       color: ElementStates.Default
     }))
     return arrElem
-  } 
-  
+  }
+
 
   const handleClickRadioInput = (e: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
     setMetod(e.currentTarget.value);
@@ -36,6 +51,10 @@ export const SortingPage: React.FC = () => {
 
   async function sortingSelection(e: React.MouseEvent<HTMLButtonElement, MouseEvent>, arr: { value: number, color: ElementStates }[], viewSort: 'ascending' | 'descending') {
     e.preventDefault()
+    const {name} = e.currentTarget;
+    console.log(name);
+    
+    handleClick(name)
     for (let i = 0; i < arr.length; i++) {
       let min = i
       arr[i].color = ElementStates.Changing;
@@ -74,10 +93,13 @@ export const SortingPage: React.FC = () => {
 
     }
     const sortArr = [...arr]
-    setArr(sortArr)
+    setArr(sortArr)    
+    handleClick(name)
   }
 
   async function sortingBubble(e: React.MouseEvent<HTMLButtonElement, MouseEvent>, arr: { value: number, color: ElementStates }[], viewSort: 'ascending' | 'descending') {
+    const {name} = e.currentTarget;
+    handleClick(name)
     for (let i = 0; i < arr.length - 1; i++) {
       for (let j = 0; j < arr.length - 1 - i; j++) {
         arr[j].color = ElementStates.Changing;
@@ -105,12 +127,15 @@ export const SortingPage: React.FC = () => {
     }
     const sortArr = [...arr]
     setArr(sortArr)
+    handleClick(name)
   }
 
   useEffect(() => { }, [arr])
 
   const getMetodSorting = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, arr: { value: number, color: ElementStates }[], viewSort: 'ascending' | 'descending') => {
+    
     if (metod === 'selection') {
+      
       return sortingSelection(e, arr, viewSort)
     }
     if (metod === 'bubble') {
@@ -123,14 +148,48 @@ export const SortingPage: React.FC = () => {
       <div className={`${styles.container}`} >
         <div className={`${styles.buttonsContainer}`}>
           <fieldset className={`${styles.blockRadio}`}>
-            <RadioInput label="Выбор" name="sort" value="selection" defaultChecked onClick={(e) => handleClickRadioInput(e)} />
-            <RadioInput label="Пузырёк" name="sort" value="bubble" onClick={(e) => handleClickRadioInput(e)} />
+            <RadioInput 
+            label="Выбор" 
+            name="sort" 
+            value="selection" 
+            defaultChecked 
+            onClick={(e) => handleClickRadioInput(e)}
+            disabled={elements.isDisabledsort}
+             />
+            <RadioInput 
+            label="Пузырёк" 
+            name="sort" 
+            value="bubble" 
+            onClick={(e) => handleClickRadioInput(e)} 
+            disabled={elements.isDisabledsort}
+            />
           </fieldset>
           <div className={`${styles.containerSortingButtons}`}>
-            <Button text="По возрастанию" sorting={Direction.Ascending} onClick={(e) => getMetodSorting(e, arr, 'ascending')} />
-            <Button text="По убыванию" sorting={Direction.Descending} onClick={(e) => getMetodSorting(e, arr, 'descending')} />
+            <Button
+            extraClass={`${styles.buttonSize}`} 
+            text="По возрастанию" 
+            sorting={Direction.Ascending} 
+            onClick={(e) => getMetodSorting(e, arr, 'ascending')}
+            name="ButtonAscending"
+            disabled = {elements.isDisabledButtonAscending}
+            isLoader = {elements.isLoaderButtonAscending}
+             />
+            <Button
+            extraClass={`${styles.buttonSize}`} 
+            text="По убыванию" 
+            sorting={Direction.Descending} 
+            onClick={(e) => getMetodSorting(e, arr, 'descending')}
+            name="ButtonDescending"
+            disabled={elements.isDisabledButtonDescending}
+            isLoader = { elements.isLoadergButtonDescending}
+             />
           </div>
-          <Button text="Новый массив" onClick={handleClickButtonNewArray} />
+          <Button 
+          text="Новый массив" 
+          onClick={handleClickButtonNewArray}
+          name="NewArrf"
+          disabled={elements.isDisabledNewArr}
+           />
         </div>
         <div className={`${styles.containerColums}`}>
           {arr.map((el, i) => <Column key={i} index={el.value} state={el.color} />)}

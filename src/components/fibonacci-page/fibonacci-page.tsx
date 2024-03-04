@@ -42,7 +42,6 @@ export const FibonacciPage: React.FC = () => {
     (elem && +elem <= 0) ? setIsDisabled(true) : setIsDisabled(false)
 
   },[isDisabled, elem])
-  
   return (
     <SolutionLayout title="Последовательность Фибоначчи">
       <form className={`${styles.form}`} onSubmit={(e) => onSubmit(e, elem)} >
