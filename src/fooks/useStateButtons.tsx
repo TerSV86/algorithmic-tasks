@@ -12,7 +12,7 @@ export function useStateButtons<T>(initialState: T) {
             for (let key in newElements) {
                 if (key.includes(`${name}`)) {
                     (key.includes('isDisabled')) ? (newElements as any)[key] = prev[key]
-                    : (newElements as any)[key] = !prev[key];
+                        : (newElements as any)[key] = !prev[key];
                 } else {
                     if (!key.includes('isLoader')) {
                         (newElements as any)[key] = !prev[key];
@@ -50,5 +50,34 @@ export function useStateButtons<T>(initialState: T) {
         }
     }
 
-    return { elements, handleClick, handleInput };
+    const handleInputSubmit = (name: string, isValue: boolean) => {
+        console.log('hand', name);
+        
+        if (!isValue) {
+            setElements((prev: T) => {
+                const newElements = { ...prev };
+                for (let key in newElements) {
+                    if (key.includes(`${name}`)) {
+                        (key.includes('isDisabled')) ? (newElements as any)[key] = true
+                            : (newElements as any)[key] = prev[key];
+                    }
+                }
+                return newElements
+            })
+        }
+        if (isValue) {
+            setElements((prev: T) => {
+                const newElements = { ...prev };
+                for (let key in newElements) {
+                    if (key.includes(`${name}`)) {
+                        (key.includes('isDisabled')) ? (newElements as any)[key] = false
+                            : (newElements as any)[key] = prev[key];
+                    }
+                }
+                return newElements
+            })
+        }        
+    }
+
+    return { elements, handleClick, handleInput, handleInputSubmit };
 }
