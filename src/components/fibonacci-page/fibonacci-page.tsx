@@ -2,22 +2,25 @@ import React, { useCallback, useEffect, useState } from "react";
 import { SolutionLayout } from "../ui/solution-layout/solution-layout";
 import { Input } from "../ui/input/input";
 import { Button } from "../ui/button/button";
-import { ElementStates } from "../../types/element-states";
 import { fib } from "../../functions/functions";
 import { Circle } from "../ui/circle/circle";
-import styles from './fibonacci.module.css'
+import styles from './fibonacci.module.css';
+
 
 export const FibonacciPage: React.FC = () => {
-  const [elem, setElem] = useState<number>()
+  const [elem, setElem] = useState<string>('')
   const [arrFib, setArrFib] = useState<number[]>([])
   const [isLoader, setIsLoader] = useState<boolean>(false)
+  const [isDisabled, setIsDisabled] = useState<boolean>(false)
 
   function onChange(e: React.FormEvent<HTMLInputElement>) {
-    const value = Number((e.target as HTMLInputElement).value);
+    const value = (e.target as HTMLInputElement).value;   
     setElem(value);
   }
 
-  const handlerButtonClick = useCallback(async () => {
+  const onSubmit = useCallback(async (e, value: string) => {
+    e.preventDefault()
+    const elem = +value;
     setIsLoader(true);
     if (elem !== undefined) {
       let result: number[] = fib(elem);
@@ -32,14 +35,19 @@ export const FibonacciPage: React.FC = () => {
     setIsLoader(false);
   }, [elem]);
 
-  useEffect(() => {
-  }, [arrFib])
-  // ввести проверку 1<elem<=19
+  useEffect(()=> { 
+
+    (!elem) ? setIsDisabled(true):
+    (elem && +elem > 19) ? setIsDisabled(true):
+    (elem && +elem <= 0) ? setIsDisabled(true) : setIsDisabled(false)
+
+  },[isDisabled, elem])
+  
   return (
     <SolutionLayout title="Последовательность Фибоначчи">
-      <form className={`${styles.form}`} onSubmit={(e)=> {e.preventDefault(); handlerButtonClick()}} >
-        <Input type="number" min={1} max={19} isLimitText onChange={(e) => onChange(e)} />
-        <Button text="Рассчитать" onClick={handlerButtonClick} isLoader={isLoader} />
+      <form className={`${styles.form}`} onSubmit={(e) => onSubmit(e, elem)} >
+        <Input type="number" min={1} max={19} isLimitText onChange={onChange} value={elem} />
+        <Button text="Рассчитать" isLoader={isLoader} type="submit" disabled={isDisabled}/>
       </form>
       <div className={`${styles.container}`} >
         {arrFib.map((el, i) => <Circle key={i} index={i} letter={`${el}`} />)}

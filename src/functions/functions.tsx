@@ -7,16 +7,16 @@ export function swap(arr: { value: string, color: ElementStates }[], start = 0, 
     return arr;
 }
 
-export function fib(n: number) {
-    let arr: number[] = [0, 1];
-    
+export function fib(n: number) {    
+    let arr: number[] = [0, 1];    
     for (let i = 2; i < n + 1; i++) {
-         arr.push(arr[i - 2] + arr[i - 1])         
-           
-    }
-    
-    
+         arr.push(arr[i - 2] + arr[i - 1])           
+    }    
     return arr
+}
+
+export async function delay(time:number) {
+    await new Promise(resolve => setTimeout(resolve, time));
 }
 
 

@@ -8,11 +8,14 @@ import { ElementStates } from "../../types/element-states";
 import styles from './sorting-page.module.css'
 
 export const SortingPage: React.FC = () => {
-  const [arr, setArr] = useState<{ value: number, color: ElementStates }[]>([]);
+  const [arr, setArr] = useState<{ value: number, color: ElementStates }[]>(createArray());
   const [metod, setMetod] = useState<string>('selection');
   const [isSorting, setIsSorting] = useState<boolean>(false)
 
-  const handleClickButtonNewArray = () => {
+  const handleClickButtonNewArray = () => {    
+    setArr(createArray());
+  } 
+  function createArray () {
     const lengthArray = Math.floor(Math.random() * (17 - 3)) + 3;
     let arr: number[] = [];
     for (let i = 0; i <= lengthArray; i++) {
@@ -23,8 +26,9 @@ export const SortingPage: React.FC = () => {
       value: elem,
       color: ElementStates.Default
     }))
-    setArr(arrElem);
-  }
+    return arrElem
+  } 
+  
 
   const handleClickRadioInput = (e: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
     setMetod(e.currentTarget.value);
@@ -103,7 +107,7 @@ export const SortingPage: React.FC = () => {
     setArr(sortArr)
   }
 
-  useEffect(() => {}, [arr])
+  useEffect(() => { }, [arr])
 
   const getMetodSorting = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, arr: { value: number, color: ElementStates }[], viewSort: 'ascending' | 'descending') => {
     if (metod === 'selection') {
@@ -119,7 +123,7 @@ export const SortingPage: React.FC = () => {
       <div className={`${styles.container}`} >
         <div className={`${styles.buttonsContainer}`}>
           <fieldset className={`${styles.blockRadio}`}>
-            <RadioInput label="Выбор" name="sort" value="selection" checked onClick={(e) => handleClickRadioInput(e)} />
+            <RadioInput label="Выбор" name="sort" value="selection" defaultChecked onClick={(e) => handleClickRadioInput(e)} />
             <RadioInput label="Пузырёк" name="sort" value="bubble" onClick={(e) => handleClickRadioInput(e)} />
           </fieldset>
           <div className={`${styles.containerSortingButtons}`}>
@@ -129,8 +133,8 @@ export const SortingPage: React.FC = () => {
           <Button text="Новый массив" onClick={handleClickButtonNewArray} />
         </div>
         <div className={`${styles.containerColums}`}>
-          {arr.map((el, i) => <Column key={i} index={el.value} state={el.color} />)}        </div>
-
+          {arr.map((el, i) => <Column key={i} index={el.value} state={el.color} />)}
+        </div>
       </div>
 
     </SolutionLayout>
