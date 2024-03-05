@@ -3,8 +3,7 @@ import { useState } from "react";
 export function useStateButtons<T>(initialState: T) {
     const [elements, setElements] = useState<T>(initialState);
 
-    const handleClick = (name: string) => {
-        console.log('hooc', name);
+    const handleClick = (name: string) => {        
 
         setElements((prev) => {
             const newElements = { ...prev };
@@ -18,8 +17,7 @@ export function useStateButtons<T>(initialState: T) {
                         (newElements as any)[key] = !prev[key];
                     }
                 }
-            }
-            console.log(newElements);
+            }            
 
             return newElements;
         });
@@ -79,5 +77,90 @@ export function useStateButtons<T>(initialState: T) {
         }        
     }
 
-    return { elements, handleClick, handleInput, handleInputSubmit };
+    const  blockingAll = (isValue: boolean) => {
+        if (!isValue) {
+            setElements((prev: T) => {
+                const newElements = { ...prev };
+                for (let key in newElements) {
+                    if (!key.includes('isLoader')) {
+                        (newElements as any)[key] = true                       
+                    }
+                }
+                return newElements
+            })
+        }
+    }
+    const  blockingId = (isValue: boolean) => {
+        if (!isValue) {
+            setElements((prev: T) => {
+                const newElements = { ...prev };
+                for (let key in newElements) {
+                    if (!key.includes('isLoader') && key.includes('Id')) {
+                                                                        
+                       (newElements as any)[key] = true                      
+                    }
+                }
+                return newElements
+            })
+        }
+    }
+
+    const blockingAdd = (isValue: boolean) => {
+        if (!isValue) {
+            setElements((prev: T) => {
+                const newElements = { ...prev };
+                for (let key in newElements) {
+                    if (!key.includes('isLoader') && key.includes('AddHead') 
+                    || !key.includes('isLoader') && key.includes('AddTail')) {  
+                                                      
+                       (newElements as any)[key] = true                      
+                    }
+                }
+                return newElements
+            })
+        }
+    }
+    const openAdd = (isValue: boolean) => {
+        if (isValue) {
+            setElements((prev: T) => {
+                const newElements = { ...prev };
+                for (let key in newElements) {
+                    if (!key.includes('isLoader') && key.includes('AddHead') 
+                    || !key.includes('isLoader') && key.includes('AddTail')) {                         
+                       (newElements as any)[key] = false                      
+                    }
+                }
+                return newElements
+            })
+        }
+    }
+    const openDelId = (isValue: boolean) => {
+        if (isValue) {
+            setElements((prev: T) => {
+                const newElements = { ...prev };
+                for (let key in newElements) {
+                    if (!key.includes('isLoader') && key.includes('DelId')) {                         
+                       (newElements as any)[key] = false                      
+                    }
+                }
+                return newElements
+            })
+        }
+    } 
+
+    const openAddId = (isValue: boolean) => {
+        if (isValue) {
+            setElements((prev: T) => {
+                const newElements = { ...prev };
+                for (let key in newElements) {
+                    if (!key.includes('isLoader') && key.includes('AddId')) {                         
+                       (newElements as any)[key] = false                      
+                    }
+                }
+                return newElements
+            })
+        }
+    } 
+
+    return { elements, handleClick, handleInput, handleInputSubmit, blockingAll, blockingId, blockingAdd, openAdd, openDelId, openAddId };
 }

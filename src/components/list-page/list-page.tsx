@@ -8,6 +8,8 @@ import { List } from "../../class/list";
 import { ElementStates } from "../../types/element-states";
 import { log } from "console";
 import { useStateButtons } from "../../fooks/useStateButtons";
+import { delay } from "../../functions/functions";
+import { SHORT_DELAY_IN_MS } from "../../constants/delays";
 
 type TNode = {
   value: string,
@@ -18,7 +20,7 @@ type TNode = {
 export type TStateButtons = Record<string, boolean>
 
 export const ListPage: React.FC = () => {
-  // тут нужны хуки, но ...
+
   const [inputValue, setInputValue] = useState<string>('');
   const [inputIndex, setInputIndex] = useState<string>('');
   const [typeAdd, setTypeAdd] = useState<string>('');
@@ -30,7 +32,7 @@ export const ListPage: React.FC = () => {
   const [element, setElement] = useState<string>();
   const [toggle, setToggle] = useState<boolean>(false)
   const [indexElement, setIndexElement] = useState<number>(0)
-  
+
   const stateButtons = {
     isDisabledAddHead: false,
     isDisabledAddTail: false,
@@ -46,7 +48,7 @@ export const ListPage: React.FC = () => {
     isLoaderDelId: false,
   }
 
-  const { elements, handleClick, handleInput } = useStateButtons<TStateButtons>(stateButtons)
+  const { elements, handleClick, handleInput, blockingAll, blockingId, blockingAdd, openAdd, openDelId, openAddId } = useStateButtons<TStateButtons>(stateButtons)
 
   const listRef = useRef(new List<string>())
   const [arrNode, setArrNode] = useState<TNode[]>([...listRef.current.createArr()])
@@ -57,8 +59,6 @@ export const ListPage: React.FC = () => {
     (e.currentTarget.name === 'value')
       ? setInputValue(e.currentTarget.value)
       : setInputIndex(e.currentTarget.value);
-
-    ( e.currentTarget.name === 'index' && inputValue === '') ? handleInput(false) : handleInput(true);
   }
 
   const handleClickButtonAddTail = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, element: string) => {
@@ -68,7 +68,8 @@ export const ListPage: React.FC = () => {
     setTypeAdd('tail');
     setElement(`${element}`)
     setInputValue('');
-    await new Promise(resolve => setTimeout(resolve, 500));
+    /*  await new Promise(resolve => setTimeout(resolve, 500)); */
+    await delay(SHORT_DELAY_IN_MS)
     listRef.current.push(element);
     setTypeAdd('');
     setIsAdd(false)
@@ -83,7 +84,8 @@ export const ListPage: React.FC = () => {
     setIsDel(true);
     setIsDelTail(true);
     setElement(`${listRef.current.getTail()}`);
-    await new Promise(resolve => setTimeout(resolve, 500));
+    /* await new Promise(resolve => setTimeout(resolve, 500)); */
+    await delay(SHORT_DELAY_IN_MS)
     listRef.current.pop();
     setIsDel(false);
     setIsDelTail(false);
@@ -98,12 +100,14 @@ export const ListPage: React.FC = () => {
     setIsAdd(true)
     setElement(`${element}`);
     setInputValue('');
-    await new Promise(resolve => setTimeout(resolve, 500));
+    /* await new Promise(resolve => setTimeout(resolve, 500)); */
+    await delay(SHORT_DELAY_IN_MS)
     listRef.current.unshift(element);
     setArrNode([...listRef.current.createArr()]);
+    handleClick(name);
     setTypeAdd('');
     setIsAdd(false);
-    handleClick(name);
+
   }
 
 
@@ -114,14 +118,16 @@ export const ListPage: React.FC = () => {
     setIsDel(true);
     setIsDelHead(true);
     setElement(`${listRef.current.getHead()}`)
-    await new Promise(resolve => setTimeout(resolve, 500));
+    /* await new Promise(resolve => setTimeout(resolve, 500)); */
+    await delay(SHORT_DELAY_IN_MS)
     listRef.current.shift();
     setArrNode([...listRef.current.createArr()])
+    handleClick(name)
     setTypeDel('')
     setIsDel(false);
     setIsDelHead(false);
     setElement('')
-    handleClick(name)
+
   }
 
   const handleClickButtonAddId = async (element: string, id: string, e: React.MouseEvent<HTMLButtonElement>) => {
@@ -135,19 +141,20 @@ export const ListPage: React.FC = () => {
       for (let i = 0; i <= +id; i++) {
         setToggle(true)
         setIndexElement(i)
-        await new Promise(resolve => setTimeout(resolve, 500));
+        /* await new Promise(resolve => setTimeout(resolve, 500)); */
+        await delay(SHORT_DELAY_IN_MS)
         setToggle(false)
       }
       listRef.current.insert(id, element);
       setArrNode([...listRef.current.createArr()]);
+      handleClick(name);
       setElement('');
       setTypeAdd('');
-      handleClick(name);
     }
   }
 
   const handleClickButtonDelId = async (id: string, e: React.MouseEvent<HTMLButtonElement>) => {
-    if (+id < arrNode.length) {      
+    if (+id < arrNode.length) {
       const { name } = e.currentTarget;
       handleClick(name);
       setInputIndex('');
@@ -158,7 +165,8 @@ export const ListPage: React.FC = () => {
         if (elem) { elem.color = ElementStates.Changing };
         if (elem && elem.isTail) { setIsDelTail(true) };
         setArrNode([...listRef.current.createArr()])
-        await new Promise(resolve => setTimeout(resolve, 500));
+        /* await new Promise(resolve => setTimeout(resolve, 500)); */
+        await delay(SHORT_DELAY_IN_MS)
       }
       setToggle(true);
       setIndexElement(+id);
@@ -166,21 +174,37 @@ export const ListPage: React.FC = () => {
       if (elem?.value) setElement(elem.value);
       if (elem) elem.value = '';
       setArrNode([...listRef.current.createArr()]);
-      await new Promise(resolve => setTimeout(resolve, 500));
+      /* await new Promise(resolve => setTimeout(resolve, 500)); */
+      await delay(SHORT_DELAY_IN_MS)
       listRef.current.delElementId(+id);
       setArrNode([...listRef.current.createArr()]);
+      handleClick(name);
       setIsDelTail(false)
       setTypeDel('');
       setToggle(false);
       setElement('');
-      handleClick(name);
+
     }
   }
 
 
-  useEffect(() => { }, [isAdd, element, arrNode, toggle, elements, inputIndex, inputValue])
+  useEffect(() => {
 
+    if (inputIndex === '' 
+        || +inputIndex < 0 
+        || +inputIndex > arrNode.length - 1) { blockingId(false) };
+    if (inputValue === '') { blockingAdd(false) };
+    if (inputValue !== '' && inputIndex === '') { blockingId(false); openAdd(true) };
+    if (inputIndex !== ''
+      && inputValue === ''
+      && +inputIndex > 0
+      && +inputIndex <= arrNode.length - 1) { blockingAdd(false); openDelId(true) };
+    if (inputIndex !== ''
+      && inputValue !== ''
+      && +inputIndex > 0
+      && +inputIndex <= arrNode.length - 1) { blockingAdd(false); openAddId(true) }
 
+  }, [inputIndex, inputValue, arrNode.length])
 
 
   return (
@@ -188,7 +212,7 @@ export const ListPage: React.FC = () => {
       <div className={`${styles.container}`} >
         <form className={`${styles.formValue}`}       >
           <Input
-            type="number"
+            type="text"
             maxLength={4}
             id='input'
             placeholder="Введите значение"
@@ -233,7 +257,7 @@ export const ListPage: React.FC = () => {
         <form className={`${styles.formIndex}`}>
           <Input
             type="number"
-            maxLength={4}
+            min={0}            
             id='input'
             placeholder="Введите индекс"
             onChange={onChange}

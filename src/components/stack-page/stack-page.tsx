@@ -34,7 +34,7 @@ export const StackPage: React.FC = () => {
     
     setItem((e.target as HTMLInputElement).value);
     const name = "Add";
-   (item === '') ? handleInputSubmit(name, false) : handleInputSubmit(name, true);
+    handleInputSubmit(name, true);
     
   }
 
