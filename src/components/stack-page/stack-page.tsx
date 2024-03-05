@@ -8,6 +8,8 @@ import { ElementStates } from "../../types/element-states";
 import styles from './stack-page.module.css'
 import { useStateButtons } from "../../fooks/useStateButtons";
 import { TStateButtons } from "../list-page/list-page";
+import { delay } from "../../functions/functions";
+import { SHORT_DELAY_IN_MS } from "../../constants/delays";
 
 export type TElement = {
   value: string,
@@ -50,7 +52,7 @@ export const StackPage: React.FC = () => {
     stackRef.current.push(elementArr);
     setArr(stackRef.current.arr);
     setItem('');
-    await new Promise(resolve => setTimeout(resolve, 500));
+    await delay(SHORT_DELAY_IN_MS)
     stackRef.current.top().color = ElementStates.Default
     setArr([...stackRef.current.arr]);
 

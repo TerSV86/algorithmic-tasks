@@ -8,6 +8,8 @@ import { ElementStates } from "../../types/element-states";
 import styles from './sorting-page.module.css'
 import { useStateButtons } from "../../fooks/useStateButtons";
 import { TStateButtons } from "../list-page/list-page";
+import { delay } from "../../functions/functions";
+import { SHORT_DELAY_IN_MS } from "../../constants/delays";
 
 
 
@@ -59,12 +61,12 @@ export const SortingPage: React.FC = () => {
       let min = i
       arr[i].color = ElementStates.Changing;
       setIsSorting((prev) => !prev)
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await delay(SHORT_DELAY_IN_MS)
 
       for (let j = i + 1; j < arr.length; j++) {
         arr[j].color = ElementStates.Changing;
         setIsSorting((prev) => !prev)
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await delay(SHORT_DELAY_IN_MS)
         if (viewSort === 'ascending') {
           if (arr[min].value > arr[j].value) {
             min = j
@@ -105,7 +107,7 @@ export const SortingPage: React.FC = () => {
         arr[j].color = ElementStates.Changing;
         arr[j + 1].color = ElementStates.Changing;
         setIsSorting((prev) => !prev)
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await delay(SHORT_DELAY_IN_MS)
         if (viewSort === 'ascending') {
           if (arr[j].value > arr[j + 1].value) {
             let temp = arr[j]

@@ -68,7 +68,7 @@ export const ListPage: React.FC = () => {
     setTypeAdd('tail');
     setElement(`${element}`)
     setInputValue('');
-    /*  await new Promise(resolve => setTimeout(resolve, 500)); */
+
     await delay(SHORT_DELAY_IN_MS)
     listRef.current.push(element);
     setTypeAdd('');
@@ -84,7 +84,7 @@ export const ListPage: React.FC = () => {
     setIsDel(true);
     setIsDelTail(true);
     setElement(`${listRef.current.getTail()}`);
-    /* await new Promise(resolve => setTimeout(resolve, 500)); */
+
     await delay(SHORT_DELAY_IN_MS)
     listRef.current.pop();
     setIsDel(false);
@@ -93,14 +93,15 @@ export const ListPage: React.FC = () => {
     handleClick(name)
   }
 
-  const handleClickButtonAddHead = async (e: React.MouseEvent<HTMLButtonElement>, element: string) => {
+  const handleClickButtonAddHead = async (e: React.FormEvent<HTMLFormElement>, element: string) => {
+    e.preventDefault();
     const { name } = e.currentTarget;
     handleClick(name)
     setTypeAdd('head');
     setIsAdd(true)
     setElement(`${element}`);
     setInputValue('');
-    /* await new Promise(resolve => setTimeout(resolve, 500)); */
+
     await delay(SHORT_DELAY_IN_MS)
     listRef.current.unshift(element);
     setArrNode([...listRef.current.createArr()]);
@@ -118,7 +119,7 @@ export const ListPage: React.FC = () => {
     setIsDel(true);
     setIsDelHead(true);
     setElement(`${listRef.current.getHead()}`)
-    /* await new Promise(resolve => setTimeout(resolve, 500)); */
+
     await delay(SHORT_DELAY_IN_MS)
     listRef.current.shift();
     setArrNode([...listRef.current.createArr()])
@@ -130,7 +131,8 @@ export const ListPage: React.FC = () => {
 
   }
 
-  const handleClickButtonAddId = async (element: string, id: string, e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleClickButtonAddId = async (element: string, id: string, e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
     if (+id < arrNode.length) {
       const { name } = e.currentTarget;
       handleClick(name);
@@ -141,7 +143,7 @@ export const ListPage: React.FC = () => {
       for (let i = 0; i <= +id; i++) {
         setToggle(true)
         setIndexElement(i)
-        /* await new Promise(resolve => setTimeout(resolve, 500)); */
+
         await delay(SHORT_DELAY_IN_MS)
         setToggle(false)
       }
@@ -165,7 +167,7 @@ export const ListPage: React.FC = () => {
         if (elem) { elem.color = ElementStates.Changing };
         if (elem && elem.isTail) { setIsDelTail(true) };
         setArrNode([...listRef.current.createArr()])
-        /* await new Promise(resolve => setTimeout(resolve, 500)); */
+
         await delay(SHORT_DELAY_IN_MS)
       }
       setToggle(true);
@@ -174,7 +176,7 @@ export const ListPage: React.FC = () => {
       if (elem?.value) setElement(elem.value);
       if (elem) elem.value = '';
       setArrNode([...listRef.current.createArr()]);
-      /* await new Promise(resolve => setTimeout(resolve, 500)); */
+
       await delay(SHORT_DELAY_IN_MS)
       listRef.current.delElementId(+id);
       setArrNode([...listRef.current.createArr()]);
@@ -190,9 +192,9 @@ export const ListPage: React.FC = () => {
 
   useEffect(() => {
 
-    if (inputIndex === '' 
-        || +inputIndex < 0 
-        || +inputIndex > arrNode.length - 1) { blockingId(false) };
+    if (inputIndex === ''
+      || +inputIndex < 0
+      || +inputIndex > arrNode.length - 1) { blockingId(false) };
     if (inputValue === '') { blockingAdd(false) };
     if (inputValue !== '' && inputIndex === '') { blockingId(false); openAdd(true) };
     if (inputIndex !== ''
@@ -210,7 +212,7 @@ export const ListPage: React.FC = () => {
   return (
     <SolutionLayout title="Связный список">
       <div className={`${styles.container}`} >
-        <form className={`${styles.formValue}`}       >
+        <form className={`${styles.formValue}`} onSubmit={(e) => handleClickButtonAddHead(e, inputValue)} name='AddHead'  >
           <Input
             type="text"
             maxLength={4}
@@ -223,10 +225,11 @@ export const ListPage: React.FC = () => {
 
           <div className={`${styles.buttonsBlock}`}>
             <Button
+              type="submit"
               name='AddHead'
               text="Добавить в head"
               extraClass={`${styles.buttonSize}`}
-              onClick={(e) => handleClickButtonAddHead(e, inputValue)}
+              /* onClick={(e) => handleClickButtonAddHead(e, inputValue)} */
               disabled={elements.isDisabledAddHead}
               isLoader={elements.isLoaderAddHead}
             />
@@ -254,10 +257,10 @@ export const ListPage: React.FC = () => {
           </div>
 
         </form>
-        <form className={`${styles.formIndex}`}>
+        <form className={`${styles.formIndex}`} onSubmit={(e) => handleClickButtonAddId(inputValue, inputIndex, e)} name="AddId">
           <Input
             type="number"
-            min={0}            
+            min={0}
             id='input'
             placeholder="Введите индекс"
             onChange={onChange}
@@ -266,10 +269,11 @@ export const ListPage: React.FC = () => {
 
           <div className={`${styles.buttonsBlock}`}>
             <Button
+              type="submit"
               name="AddId"
               text="Добавить по индексу"
               linkedList="big"
-              onClick={(e) => handleClickButtonAddId(inputValue, inputIndex, e)}
+              /* onClick={(e) => handleClickButtonAddId(inputValue, inputIndex, e)} */
               disabled={elements.isDisabledAddId}
               isLoader={elements.isLoaderAddId}
             />

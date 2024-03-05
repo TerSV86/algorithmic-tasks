@@ -169,7 +169,7 @@ export class Queue<T> implements TQueue<T> {
 
     createArr() {
         let arr: { value: string, color: ElementStates, isHead: boolean, isTail: boolean }[] = [];
-        function recusia(node: any) {
+        function recursion(node: any) {
             let current = node;
             const elemetn = {
                 value: current.value,
@@ -183,10 +183,10 @@ export class Queue<T> implements TQueue<T> {
             }
             arr.push(elemetn)
             current = current.next;
-            recusia(current)
+            recursion(current)
         }
         if (this.list) {
-            recusia(this.list)
+            recursion(this.list)
         }
         return arr
     }

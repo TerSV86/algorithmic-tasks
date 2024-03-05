@@ -9,6 +9,8 @@ import { Queue, TQueue } from "../../class/queue";
 import styles from './queue-page.module.css'
 import { useStateButtons } from "../../fooks/useStateButtons";
 import { TStateButtons } from "../list-page/list-page";
+import { delay } from "../../functions/functions";
+import { SHORT_DELAY_IN_MS } from "../../constants/delays";
 
 export type TNode = {
   value: string,
@@ -52,7 +54,7 @@ export const QueuePage: React.FC = () => {
     const tail = queueRef.current.getTail()
     if (tail) tail.color = ElementStates.Changing;
     setArrNode([...queueRef.current.createArr()])
-    await new Promise(resolve => setTimeout(resolve, 500));
+    await delay(SHORT_DELAY_IN_MS)
     if (tail) tail.color = ElementStates.Default;
     setArrNode([...queueRef.current.createArr()])
     handleClick(name)
