@@ -31,6 +31,7 @@ export const StringComponent: React.FC = () => {
   const handleButtonClick = async (e: React.FormEvent<HTMLFormElement>, letters: string) => {
     e.preventDefault();
     const steps = getReversString(value);
+    setIsLoader(true)
     setAlgorithmSteps(steps)
     if (steps.length) {
       intervalId.current = setInterval(() => {
@@ -39,22 +40,26 @@ export const StringComponent: React.FC = () => {
           if (nextStep >= steps.length - 1 && intervalId.current) {
             clearInterval(intervalId.current);
           }
-
+          if(nextStep === steps.length-1) {setIsLoader(false)}
           return nextStep;
         })
       }, DELAY_IN_MS)
     }
+    
+    
+    
   }
 
   useEffect(() => {
     (value.length === 0) ? setDisabled(true) : setDisabled(false)
     setCurrentAlgorithmStep(0);
     clearInterval(intervalId.current);
+    
   }, [value])
-  console.log(algorithmStep);
+  
 
   return (
-    <SolutionLayout title="Строка" extraClass="row">
+    <SolutionLayout title="Строка" extraClass="row" data-testid='string-title'>
       <form className={`${styles.form}`} onSubmit={(e) => handleButtonClick(e, value)} >
         <Input
           isLimitText
@@ -73,7 +78,15 @@ export const StringComponent: React.FC = () => {
       </form>
       <div className={`${styles.container}`} data-testid='circle-container'>
         {algorithmStep[currentAlgorithmStep] && algorithmStep[currentAlgorithmStep].map((el, i) => (
-          <Circle key={i} letter={el} state={getState(i, algorithmStep[currentAlgorithmStep].length-1, currentAlgorithmStep)} />
+          <Circle 
+            key={i}
+            letter={el} 
+            state={getState(i,
+                           algorithmStep[currentAlgorithmStep].length-1, 
+                           currentAlgorithmStep, 
+                           (i === Math.floor((algorithmStep[currentAlgorithmStep].length-1)/2) 
+                           && currentAlgorithmStep === algorithmStep.length-1) ? true : false)}
+             data-testid='circle-component'/>
         ))}
       </div>
     </SolutionLayout>

@@ -10,19 +10,26 @@
     "@types/node": "^16.11.22",
     "@types/react": "^17.0.39",
     "@types/react-dom": "^17.0.11",
+    "@types/react-router-dom": "^5.3.3",
+    "@types/react-test-renderer": "17.0.2",
+    "cypress": "^10.0.2",
+    "eslint-plugin-cypress": "^2.12.1",
     "nanoid": "^3.2.0",
-    "react": "^18.2.0",
+    "prettier": "^2.6.2",
+    "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-fast-marquee": "^1.3.1",
     "react-router-dom": "^5.2.1",
     "react-scripts": "5.0.0",
-    "typescript": "^4.5.5",
+    "react-test-renderer": "17.0.2",
+    "typescript": "^5.4.2",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "test:cypress":"cypress open",    
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -45,7 +52,10 @@
   },
   "devDependencies": {
     "@types/react-router-dom": "^5.3.3",
-    "@types/react-test-renderer": "^18.0.7",
-    "react-test-renderer": "^18.2.0"
-  }
+    "start-server-and-test": "^2.0.3"
+  },
+  "main": "index.js",
+  "repository": "https://github.com/TerSV86/algorithmic-tasks",
+  "author": "Sergey Terpugov <TerSV@yandex.ru>",
+  "license": "MIT"
 }

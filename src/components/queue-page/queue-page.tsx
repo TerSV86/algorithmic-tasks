@@ -78,8 +78,8 @@ export const QueuePage: React.FC = () => {
   return (
     <SolutionLayout title="Очередь">
       <div className={`${styles.container}`}>
-        <form className={`${styles.form}`} name="Add" onSubmit={(e) => { handleClickButtonAdd(e, item) }}>
-          <Input maxLength={4} id='input' value={item} onChange={onChange} />
+        <form className={`${styles.form}`} name="Add" onSubmit={(e) => { handleClickButtonAdd(e, item) }} data-testid='form'>
+          <Input maxLength={4} id='input' value={item} onChange={onChange} data-testid='input'/>
           <div className={`${styles.blockButtons}`}>
             <Button
               text="Добавить"
@@ -87,13 +87,14 @@ export const QueuePage: React.FC = () => {
               name="Add"
               disabled={elements.isDisabledAdd}
               isLoader={elements.isLoaderAdd}
-             /* disabled={isDisabled} */ />
+              data-testid='button-add-qeueu' />
             <Button
               text="Удалить"
               onClick={() => handleClickButtonDel()}
               name="Del"
               disabled={elements.isDisabledDel}
               isLoader={elements.isLoaderDel}
+              data-testid='button-del-qeueu'
             />
           </div>
           <div style={{
@@ -104,6 +105,7 @@ export const QueuePage: React.FC = () => {
               onClick={() => handleClickButtonClear()}
               name="Clear"
               disabled={elements.isDisabledClear}
+              data-testid='button-clear-qeueu'
             />
           </div>
         </form>
