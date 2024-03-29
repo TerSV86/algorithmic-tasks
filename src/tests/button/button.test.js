@@ -10,30 +10,30 @@ describe('check button', () => {
             text: undefined,
             isLoader: false,
             disabled: false,
-            explation: 'без текста'
+            explanation: 'без текста'
         },
         {
             text: 'Кнопка с текстом',
             isLoader: false,
             disabled: false,
-            explation: 'с текстом'
+            explanation: 'с текстом'
         },
         {
             text: undefined,
             isLoader: false,
             disabled: true,
-            explation: 'заблокированная'
+            explanation: 'заблокированная'
         },
         {
             text: undefined,
             isLoader: true,
             disabled: false,
-            explation: 'с индикацией загрузки'
+            explanation: 'с индикацией загрузки'
         }
     ]
 
     testCases.forEach(attribute => {
-        it(`Кнопка ${attribute.explation} рендерится без ошибок`, () => {
+        it(`Кнопка ${attribute.explanation} рендерится без ошибок`, () => {
             const button = renderer.create(<Button text={attribute.text}
                 isLoader={attribute.isLoader}
                 disabled={attribute.disabled} />)
