@@ -81,6 +81,7 @@ export const ListPage: React.FC = () => {
   const handleClickButtonDelTail = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     const { name } = e.currentTarget;
     handleClick(name)
+    setTypeDel('tail');
     setIsDel(true);
     setIsDelTail(true);
     setElement(`${listRef.current.getTail()}`);
@@ -91,6 +92,7 @@ export const ListPage: React.FC = () => {
     setIsDelTail(false);
     setArrNode([...listRef.current.createArr()]);
     handleClick(name)
+    setTypeDel('')
   }
 
   const handleClickButtonAddHead = async (e: React.FormEvent<HTMLFormElement>, element: string) => {
@@ -167,8 +169,8 @@ export const ListPage: React.FC = () => {
         if (elem) { elem.color = ElementStates.Changing };
         if (elem && elem.isTail) { setIsDelTail(true) };
         setArrNode([...listRef.current.createArr()])
-
         await delay(SHORT_DELAY_IN_MS)
+        if (elem) { elem.color = ElementStates.Default };
       }
       setToggle(true);
       setIndexElement(+id);
@@ -212,7 +214,11 @@ export const ListPage: React.FC = () => {
   return (
     <SolutionLayout title="Связный список">
       <div className={`${styles.container}`} >
-        <form className={`${styles.formValue}`} onSubmit={(e) => handleClickButtonAddHead(e, inputValue)} name='AddHead'  >
+        <form className={`${styles.formValue}`} 
+              onSubmit={(e) => handleClickButtonAddHead(e, inputValue)} 
+              name='AddHead'
+              data-testid='form'
+              >
           <Input
             type="text"
             maxLength={4}
@@ -220,7 +226,8 @@ export const ListPage: React.FC = () => {
             placeholder="Введите значение"
             onChange={onChange}
             name="value"
-            value={inputValue}
+            value={inputValue}  
+            data-testid='input-value'       
           />
 
           <div className={`${styles.buttonsBlock}`}>
@@ -232,6 +239,7 @@ export const ListPage: React.FC = () => {
               /* onClick={(e) => handleClickButtonAddHead(e, inputValue)} */
               disabled={elements.isDisabledAddHead}
               isLoader={elements.isLoaderAddHead}
+              data-testid='button-add-head-list'
             />
             <Button
               name="AddTail"
@@ -239,21 +247,27 @@ export const ListPage: React.FC = () => {
               extraClass={`${styles.buttonSize}`}
               onClick={(e) => handleClickButtonAddTail(e, inputValue)}
               disabled={elements.isDisabledAddTail}
-              isLoader={elements.isLoaderAddTail} />
+              isLoader={elements.isLoaderAddTail} 
+              data-testid='button-add-tail-list'
+              />
             <Button
               name="DelHead"
               text="Удалить из head"
               extraClass={`${styles.buttonSize}`}
               onClick={(e) => handleClickButtonDelHead(e)}
               disabled={elements.isDisabledDelHead}
-              isLoader={elements.isLoaderDelHead} />
+              isLoader={elements.isLoaderDelHead}
+              data-testid='button-del-head-list'
+              />
             <Button
               name="DelTail"
               text="Удалить из tail"
               extraClass={`${styles.buttonSize}`}
               onClick={(e) => handleClickButtonDelTail(e)}
               disabled={elements.isDisabledDelTail}
-              isLoader={elements.isLoaderDelTail} />
+              isLoader={elements.isLoaderDelTail}
+              data-testid='button-del-tail-list'
+              />
           </div>
 
         </form>
@@ -265,7 +279,9 @@ export const ListPage: React.FC = () => {
             placeholder="Введите индекс"
             onChange={onChange}
             name="index"
-            value={inputIndex} />
+            value={inputIndex} 
+            data-testid='input-index'
+            />
 
           <div className={`${styles.buttonsBlock}`}>
             <Button
@@ -276,6 +292,7 @@ export const ListPage: React.FC = () => {
               /* onClick={(e) => handleClickButtonAddId(inputValue, inputIndex, e)} */
               disabled={elements.isDisabledAddId}
               isLoader={elements.isLoaderAddId}
+              data-testid='button-add-index-list'
             />
 
             <Button
@@ -285,6 +302,7 @@ export const ListPage: React.FC = () => {
               onClick={(e) => handleClickButtonDelId(inputIndex, e)}
               disabled={elements.isDisabledDelId}
               isLoader={elements.isLoaderDelId}
+              data-testid='button-del-index-list'
             />
           </div>
         </form>
@@ -296,22 +314,30 @@ export const ListPage: React.FC = () => {
                 {(typeAdd === 'tail' && elem.isTail
                   || typeAdd === 'head' && elem.isHead
                   || typeAdd === 'id' && toggle && i === indexElement)
-                  ? <Circle isSmall extraClass={`${styles.elementFirst}`}
-                    letter={`${element}`} /> : null}
+                  ? <Circle 
+                            isSmall
+                            extraClass={`${styles.elementFirst}`}
+                            letter={`${element}`}
+                            data-testid='circle-top'
+                            /> : null}
 
                 <Circle
                   letter={(isDelTail && elem.isTail) ? '' : `${elem.value}`}
                   state={elem.color}
                   index={i}
                   head={(elem.isHead && !isAdd) ? 'head' : ''}
-                  tail={(elem.isTail && !isDelTail) ? 'tail' : ''} />
+                  tail={(elem.isTail && !isDelTail) ? 'tail' : ''}
+                  
+                  />
 
                 {(typeDel === 'head' && elem.isHead
                   || typeDel === 'tail' && elem.isTail
                   || typeDel === 'id' && toggle && i === indexElement)
                   ? <Circle isSmall
                     extraClass={`${styles.elementLast}`}
-                    letter={`${element}`} />
+                    letter={`${element}`}
+                    data-testid='circle-bottom'
+                    />
                   : null}
               </div>
               {(arrNode.length - 1 === i) ? null : <div className='text_type_h3 text_color_link p-9'>&#62;</div>}

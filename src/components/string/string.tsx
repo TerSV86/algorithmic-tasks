@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { SolutionLayout } from "../ui/solution-layout/solution-layout";
 import { Input } from "../ui/input/input";
 import { Button } from "../ui/button/button";
@@ -7,6 +7,7 @@ import { ElementStates } from "../../types/element-states";
 import { swap, delay } from "../../functions/functions";
 import styles from './string.module.css'
 import { DELAY_IN_MS } from "../../constants/delays";
+import { getArrElements, getReversString, getState } from "./utils";
 
 export const StringComponent: React.FC = () => {
   const [value, setValue] = useState<string>('')
@@ -15,59 +16,78 @@ export const StringComponent: React.FC = () => {
   const [isLoader, setIsLoader] = useState<boolean>(false)
   const [isDisabled, setDisabled] = useState<boolean>(false)
 
+  //*
+  const [currentAlgorithmStep, setCurrentAlgorithmStep] = useState(0);
+  const intervalId = useRef<NodeJS.Timeout>();
+  const [algorithmStep, setAlgorithmSteps] = useState<string[][]>([])
+
   const onChange = (e: React.FormEvent<HTMLInputElement>) => {
     const value = (e.target as HTMLInputElement).value;
     setValue(value)
-     
+
   }
+
 
   const handleButtonClick = async (e: React.FormEvent<HTMLFormElement>, letters: string) => {
     e.preventDefault();
-    const arrElem: { value: string; color: ElementStates }[] = Array.from(letters).map(element => ({
-      value: element,
-      color: ElementStates.Default,
-    }));
-    setArrLetters(arrElem);
-    await delay(DELAY_IN_MS);
-    if (arrElem && arrElem.length) {
-      setIsLoader(true)
-      let start = 0;
-      let end = arrElem.length - 1;
-      while (start <= end) {
-        arrElem[start].color = ElementStates.Changing;
-        arrElem[end].color = ElementStates.Changing;
-        setIsSorting(true)
-        const newArr = swap(arrElem, start, end)
-        await delay(DELAY_IN_MS);
-        arrElem[start].color = ElementStates.Modified;
-        arrElem[end].color = ElementStates.Modified;
-        setIsSorting(false)
-        start++
-        end--
-        setArrLetters([...newArr])
-      }
-      setIsLoader(false)
+    const steps = getReversString(value);
+    setIsLoader(true)
+    setAlgorithmSteps(steps)
+    if (steps.length) {
+      intervalId.current = setInterval(() => {
+        setCurrentAlgorithmStep((currentStep) => {
+          const nextStep = currentStep + 1;
+          if (nextStep >= steps.length - 1 && intervalId.current) {
+            clearInterval(intervalId.current);
+          }
+          if(nextStep === steps.length-1) {setIsLoader(false)}
+          return nextStep;
+        })
+      }, DELAY_IN_MS)
     }
+    
+    
+    
   }
 
-  useEffect(()=> {    
+  useEffect(() => {
     (value.length === 0) ? setDisabled(true) : setDisabled(false)
+    setCurrentAlgorithmStep(0);
+    clearInterval(intervalId.current);
+    
   }, [value])
+  
 
   return (
-    <SolutionLayout title="Строка" extraClass="row">
-      <form className={`${styles.form}`} onSubmit={(e)=> handleButtonClick(e, value)} >
+    <SolutionLayout title="Строка" extraClass="row" data-testid='string-title'>
+      <form className={`${styles.form}`} onSubmit={(e) => handleButtonClick(e, value)} >
         <Input
           isLimitText
           maxLength={11}
           style={{ width: '377px' }}
           onChange={onChange}
           name="input"
-          value={value} />
-        {(arrLetters) && <Button text="Развернуть"  isLoader={isLoader} type="submit" disabled={isDisabled} />}
+          value={value}
+          data-testid='input' />
+        {/* (arrLetters) && */ <Button
+          text="Развернуть"
+          isLoader={isLoader}
+          type="submit"
+          disabled={isDisabled}
+          data-testid='button' />}
       </form>
-      <div className={`${styles.container}`}>
-        {(arrLetters) ? arrLetters.map((el, i) => <Circle key={i} letter={el.value} state={el.color} />) : null}
+      <div className={`${styles.container}`} data-testid='circle-container'>
+        {algorithmStep[currentAlgorithmStep] && algorithmStep[currentAlgorithmStep].map((el, i) => (
+          <Circle 
+            key={i}
+            letter={el} 
+            state={getState(i,
+                           algorithmStep[currentAlgorithmStep].length-1, 
+                           currentAlgorithmStep, 
+                           (i === Math.floor((algorithmStep[currentAlgorithmStep].length-1)/2) 
+                           && currentAlgorithmStep === algorithmStep.length-1) ? true : false)}
+             data-testid='circle-component'/>
+        ))}
       </div>
     </SolutionLayout>
   );

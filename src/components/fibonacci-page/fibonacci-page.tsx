@@ -44,9 +44,9 @@ export const FibonacciPage: React.FC = () => {
   },[isDisabled, elem])
   return (
     <SolutionLayout title="Последовательность Фибоначчи">
-      <form className={`${styles.form}`} onSubmit={(e) => onSubmit(e, elem)} >
-        <Input type="number" min={1} max={19} isLimitText onChange={onChange} value={elem} />
-        <Button text="Рассчитать" isLoader={isLoader} type="submit" disabled={isDisabled}/>
+      <form className={`${styles.form}`} onSubmit={(e) => onSubmit(e, elem)} data-testid='form'>
+        <Input type="number" min={1} max={19} isLimitText onChange={onChange} value={elem} data-testid='input'/>
+        <Button text="Рассчитать" isLoader={isLoader} type="submit" disabled={isDisabled} data-testid='button-calculate'/>
       </form>
       <div className={`${styles.container}`} >
         {arrFib.map((el, i) => <Circle key={i} index={i} letter={`${el}`} />)}

@@ -3,7 +3,8 @@ import { useState } from "react";
 export function useStateButtons<T>(initialState: T) {
     const [elements, setElements] = useState<T>(initialState);
 
-    const handleClick = (name: string) => {        
+    const handleClick = (name: string) => {
+        console.log('tyt');
 
         setElements((prev) => {
             const newElements = { ...prev };
@@ -17,7 +18,8 @@ export function useStateButtons<T>(initialState: T) {
                         (newElements as any)[key] = !prev[key];
                     }
                 }
-            }            
+            }
+            console.log('new', newElements);
 
             return newElements;
         });
@@ -50,7 +52,7 @@ export function useStateButtons<T>(initialState: T) {
 
     const handleInputSubmit = (name: string, isValue: boolean) => {
         console.log('hand', name);
-        
+
         if (!isValue) {
             setElements((prev: T) => {
                 const newElements = { ...prev };
@@ -74,30 +76,30 @@ export function useStateButtons<T>(initialState: T) {
                 }
                 return newElements
             })
-        }        
+        }
     }
 
-    const  blockingAll = (isValue: boolean) => {
+    const blockingAll = (isValue: boolean) => {
         if (!isValue) {
             setElements((prev: T) => {
                 const newElements = { ...prev };
                 for (let key in newElements) {
                     if (!key.includes('isLoader')) {
-                        (newElements as any)[key] = true                       
+                        (newElements as any)[key] = true
                     }
                 }
                 return newElements
             })
         }
     }
-    const  blockingId = (isValue: boolean) => {
+    const blockingId = (isValue: boolean) => {
         if (!isValue) {
             setElements((prev: T) => {
                 const newElements = { ...prev };
                 for (let key in newElements) {
                     if (!key.includes('isLoader') && key.includes('Id')) {
-                                                                        
-                       (newElements as any)[key] = true                      
+
+                        (newElements as any)[key] = true
                     }
                 }
                 return newElements
@@ -110,10 +112,10 @@ export function useStateButtons<T>(initialState: T) {
             setElements((prev: T) => {
                 const newElements = { ...prev };
                 for (let key in newElements) {
-                    if (!key.includes('isLoader') && key.includes('AddHead') 
-                    || !key.includes('isLoader') && key.includes('AddTail')) {  
-                                                      
-                       (newElements as any)[key] = true                      
+                    if (!key.includes('isLoader') && key.includes('AddHead')
+                        || !key.includes('isLoader') && key.includes('AddTail')) {
+
+                        (newElements as any)[key] = true
                     }
                 }
                 return newElements
@@ -125,9 +127,9 @@ export function useStateButtons<T>(initialState: T) {
             setElements((prev: T) => {
                 const newElements = { ...prev };
                 for (let key in newElements) {
-                    if (!key.includes('isLoader') && key.includes('AddHead') 
-                    || !key.includes('isLoader') && key.includes('AddTail')) {                         
-                       (newElements as any)[key] = false                      
+                    if (!key.includes('isLoader') && key.includes('AddHead')
+                        || !key.includes('isLoader') && key.includes('AddTail')) {
+                        (newElements as any)[key] = false
                     }
                 }
                 return newElements
@@ -139,28 +141,28 @@ export function useStateButtons<T>(initialState: T) {
             setElements((prev: T) => {
                 const newElements = { ...prev };
                 for (let key in newElements) {
-                    if (!key.includes('isLoader') && key.includes('DelId')) {                         
-                       (newElements as any)[key] = false                      
+                    if (!key.includes('isLoader') && key.includes('DelId')) {
+                        (newElements as any)[key] = false
                     }
                 }
                 return newElements
             })
         }
-    } 
+    }
 
     const openAddId = (isValue: boolean) => {
         if (isValue) {
             setElements((prev: T) => {
                 const newElements = { ...prev };
                 for (let key in newElements) {
-                    if (!key.includes('isLoader') && key.includes('AddId')) {                         
-                       (newElements as any)[key] = false                      
+                    if (!key.includes('isLoader') && key.includes('AddId')) {
+                        (newElements as any)[key] = false
                     }
                 }
                 return newElements
             })
         }
-    } 
+    }
 
     return { elements, handleClick, handleInput, handleInputSubmit, blockingAll, blockingId, blockingAdd, openAdd, openDelId, openAddId };
 }

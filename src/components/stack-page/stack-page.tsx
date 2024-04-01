@@ -79,8 +79,8 @@ export const StackPage: React.FC = () => {
   return (
     <SolutionLayout title="Стек">
       <div className={`${styles.container}`}>
-        <form className={`${styles.form}`} onSubmit={(e) => handleClickButtonAdd(e, item)} name="Add">
-          <Input maxLength={4} onChange={(e) => onChange(e)} id='input' value={item} />
+        <form className={`${styles.form}`} onSubmit={(e) => handleClickButtonAdd(e, item)} name="Add" data-testid='form'>
+          <Input maxLength={4} onChange={(e) => onChange(e)} id='input' value={item} data-testid='input' />
           <div className={`${styles.blockButtons}`}>
             <Button
               text="Добавить"
@@ -88,6 +88,7 @@ export const StackPage: React.FC = () => {
               name="Add"
               disabled={elements.isDisabledAdd}
               isLoader={elements.isLoaderAdd}
+              data-testid='button-add-stack'
             />
             <Button
               text="Удалить"
@@ -95,16 +96,18 @@ export const StackPage: React.FC = () => {
               name="Del"
               disabled={elements.isDisabledDel}
               isLoader={elements.isLoaderDel}
+              data-testid='button-del-stack'
             />
           </div>
           <div style={{
             paddingLeft: '40px',
-          }}>
+          }}> 
             <Button
               text="Очистить"
               onClick={handleClickButtonClear}
               name="Clear"
               disabled={elements.isDisabledClear}
+              data-testid='button-clear-stack'
             />
           </div>
         </form>
